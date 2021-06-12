@@ -13,7 +13,7 @@ namespace Intra_Block.Tests.Cache
         [SetUp]
         public void SetUp()
         {
-            Cache = new Intra_Block.Cache.Cache(22);
+            Cache = new Intra_Block.Cache.Cache(38);
         }
 
         [Test]

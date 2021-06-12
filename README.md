@@ -6,7 +6,7 @@
 
 > responsible for saving and retrieving items from the cache, removing old entries and tracking key analytics.
 
-### key-value store
+### key-value store (Cache)
 
 Core data structure holding cached data.
 

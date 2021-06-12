@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace Intra_Block.Cache
 {
@@ -13,7 +13,7 @@ namespace Intra_Block.Cache
 
     public class Cache : ICache
     {
-        private readonly IDictionary<string, string> CacheStore = new Dictionary<string, string>();
+        private readonly IDictionary<string, CacheEntry> CacheStore = new Dictionary<string, CacheEntry>();
         private int CacheSize;
         private readonly int MaximumSize;
 
@@ -26,22 +26,29 @@ namespace Intra_Block.Cache
         {
             if (!CacheStore.ContainsKey(key)) throw new DoesNotExistException(key);
 
-            return CacheStore[key];
+            CacheStore[key].LastRetrieval = DateTime.Now;
+
+            return CacheStore[key].Data;
         }
 
         public void Insert(string key, string value)
         {
             if (CacheStore.ContainsKey(key))
             {
-                CacheStore[key] = value;
+                CacheStore[key].Data = value;
             }
             else
             {
-                var newValueSize = sizeof(char) * value.Length;
-                
+                var newValueSize = sizeof(char) * value.Length + 16;
+
                 if (CacheSize + newValueSize > MaximumSize) throw new CacheSizeExceededException();
 
-                CacheStore[key] = value;
+                CacheStore.Add(key, new CacheEntry()
+                {
+                    Data = value,
+                    Updated = DateTime.Now,
+                    LastRetrieval = DateTime.Now
+                });
 
                 CacheSize += newValueSize;
             }
