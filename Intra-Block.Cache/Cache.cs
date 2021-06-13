@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Intra_Block.Cache
@@ -6,9 +7,11 @@ namespace Intra_Block.Cache
     public interface ICache
     {
         string Retrieve(string key);
-        void Insert(string key, string value);
+        void Insert(string key, string value, int expiry);
         void Exterminatus(string key);
         int NumberOfEntries();
+        ICollection<CacheEntry> Entries();
+        ICollection<string> Keys();
     }
 
     public class Cache : ICache
@@ -31,7 +34,7 @@ namespace Intra_Block.Cache
             return CacheStore[key].Data;
         }
 
-        public void Insert(string key, string value)
+        public void Insert(string key, string value, int expiry = 0)
         {
             if (CacheStore.ContainsKey(key))
             {
@@ -39,31 +42,49 @@ namespace Intra_Block.Cache
             }
             else
             {
-                var newValueSize = sizeof(char) * value.Length + 16;
+                var newValueSize = SizeOfEntry(value);
 
-                if (CacheSize + newValueSize > MaximumSize) throw new CacheSizeExceededException();
+                if (CacheSize + newValueSize > MaximumSize) throw new CacheSizeExceededException(newValueSize,CacheSize);
 
                 CacheStore.Add(key, new CacheEntry()
                 {
                     Data = value,
                     Updated = DateTime.Now,
-                    LastRetrieval = DateTime.Now
+                    LastRetrieval = DateTime.Now,
+                    Expiry = expiry
                 });
 
                 CacheSize += newValueSize;
             }
         }
 
+        private static int SizeOfEntry(string value)
+        {
+            return sizeof(char) * value.Length + 16 + 4;
+        }
+
         public void Exterminatus(string key)
         {
             if (!CacheStore.ContainsKey(key)) throw new DoesNotExistException(key);
 
+            CacheSize -= SizeOfEntry(CacheStore[key].Data);
+            
             CacheStore.Remove(key);
         }
 
         public int NumberOfEntries()
         {
             return CacheStore.Values.Count;
+        }
+
+        public ICollection<CacheEntry> Entries()
+        {
+            return CacheStore.Values;
+        }
+
+        public ICollection<string> Keys()
+        {
+            return CacheStore.Keys;
         }
     }
 }
