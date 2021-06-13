@@ -9,11 +9,13 @@ namespace Intra_Block.Tests.Cache
     public class When_Removing
     {
         private Intra_Block.Cache.Cache Cache;
+        private Administratum Administratum;
         
         [SetUp]
         public void SetUp()
         {
-            Cache = new Intra_Block.Cache.Cache();
+            Administratum = new Administratum();
+            Cache = new Intra_Block.Cache.Cache(Administratum);
             Cache.Insert("key","Hello World");
         }
 

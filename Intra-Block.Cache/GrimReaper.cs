@@ -12,15 +12,17 @@ namespace Intra_Block.Cache
         void CheckOnCache();
     }
     
-    public class GrimReaper : IHostedService, IDisposable, IGrimReaper
+    public class GrimReaper : IHostedService, IGrimReaper
     {
         private readonly ILogger<GrimReaper> Logger;
         private readonly Cache Cache;
+        private readonly Administratum Administratum;
 
-        public GrimReaper(ILogger<GrimReaper> logger, Cache cache)
+        public GrimReaper(ILogger<GrimReaper> logger, Cache cache, Administratum administratum)
         {
             Logger = logger;
             Cache = cache;
+            Administratum = administratum;
         }
         
         public Task StartAsync(CancellationToken cancellationToken)
@@ -36,7 +38,7 @@ namespace Intra_Block.Cache
                     var timeFromLast = DateTime.Now - entry.LastRetrieval;
 
                     // if the data is now stale get rid of it
-                    if (timeFromLast.TotalSeconds > entry.Expiry)
+                    if (timeFromLast.TotalMilliseconds > entry.Expiry)
                     {
                         Reap(Cache.Keys().ToArray()[i]);
                     }
@@ -52,9 +54,9 @@ namespace Intra_Block.Cache
             try
             {
                 Cache.Exterminatus(key);
-                // TODO: Administratum call for average reaping
+                Administratum.ReportReap();
             }
-            catch (DoesNotExistException doesNotExistException)
+            catch (DoesNotExistException)
             {
                 Logger.LogInformation("The reaper is trying to exterminatus an entry that doesn't exist.");
             }
@@ -62,12 +64,8 @@ namespace Intra_Block.Cache
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
+            Logger.LogInformation("The Grim Reaper has met an ill fate");
+            return Task.CompletedTask;
         }
 
         public void CheckOnCache()
