@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option csharp_namespace = "Intra_Block.COM";
+
+package intra;
+
+service Intra {
+  rpc Insert (InsertionRequest) returns (InsertionResponse);
+  rpc Retrieve (RetrievalRequest) returns (RetrievalResponse);
+}
+
+message InsertionRequest {
+  string key = 1;
+}
+
+message InsertionResponse {
+  bool successful = 1;
+}
+
+message RetrievalRequest {
+  string key = 1;
+}
+
+message RetrievalResponse {
+  string value = 1;
+}
+
+message Exterminatus {}

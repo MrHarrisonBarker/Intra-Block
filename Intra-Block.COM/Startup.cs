@@ -32,6 +32,7 @@ namespace Intra_Block.COM
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<IntraService>();
 
                 endpoints.MapGet("/", async context =>
                 {
