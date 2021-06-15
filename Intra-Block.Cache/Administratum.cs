@@ -34,7 +34,7 @@ namespace Intra_Block.Cache
 
         public Report GatherReport()
         {
-            return new Report()
+            return new Report
             {
                 Averages = Averages,
             };

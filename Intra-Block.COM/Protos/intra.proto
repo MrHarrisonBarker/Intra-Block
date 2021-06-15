@@ -5,10 +5,11 @@ option csharp_namespace = "Intra_Block.COM";
 package intra;
 
 service Intra {
-  rpc Insert (InsertionRequest) returns (InsertionResponse);
+  rpc Insert (InsertionRequest) returns (GenericResponse);
   rpc Retrieve (RetrievalRequest) returns (RetrievalResponse);
-  
-  rpc Report (ReportRequest) returns (ReportResponse); 
+  rpc Remove (RemoveRequest) returns (GenericResponse);
+
+  rpc Report (ReportRequest) returns (ReportResponse);
 }
 
 message InsertionRequest {
@@ -19,6 +20,7 @@ message InsertionRequest {
 
 message InsertionResponse {
   bool successful = 1;
+  string message = 2;
 }
 
 message RetrievalRequest {
@@ -35,12 +37,30 @@ message ReportRequest {}
 
 message ReportResponse {
   uint64 numberOfEntries = 1;
-  Averages averages = 2;
+  uint64 currentMemoryUsage = 2;
+  uint64 uptime = 3;
+  Averages averages = 4;
 }
 
 message Averages {
-    double RequestsPerMinute = 1;
-    double TimeToRetrieve = 2;
-    double TimeToInsert = 3;
-    double ReapsPerMinute = 4;
+  double RequestsPerMinute = 1;
+  double TimeToRetrieve = 2;
+  double TimeToInsert = 3;
+  double ReapsPerMinute = 4;
+  double RequestCompletion = 5;
 }
+
+message RemoveRequest {
+  string key = 1;
+}
+
+message RemoveResponse {
+  bool successful = 1;
+  string message = 2;
+}
+
+message GenericResponse {
+  bool successful = 1;
+  string message = 2;
+}
+

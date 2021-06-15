@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Intra_Block.Cache;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Intra_Block.COM
 {
@@ -19,7 +21,7 @@ namespace Intra_Block.COM
             Administratum = administratum;
         }
 
-        public override Task<InsertionResponse> Insert(InsertionRequest request, ServerCallContext context)
+        public override Task<GenericResponse> Insert(InsertionRequest request, ServerCallContext context)
         {
             Logger.LogInformation($"{context.Host} inserting \"{request.Key}\" into the cache");
 
@@ -27,7 +29,7 @@ namespace Intra_Block.COM
             {
                 Cache.Insert(request.Key, request.Value, request.Expiry);
 
-                return Task.FromResult(new InsertionResponse()
+                return Task.FromResult(new GenericResponse()
                 {
                     Successful = true
                 });
@@ -36,9 +38,10 @@ namespace Intra_Block.COM
             {
                 Logger.LogInformation(e.Message);
 
-                return Task.FromResult(new InsertionResponse()
+                return Task.FromResult(new GenericResponse()
                 {
-                    Successful = false
+                    Successful = false,
+                    Message = e.Message
                 });
             }
         }
@@ -59,7 +62,32 @@ namespace Intra_Block.COM
                 Logger.LogInformation(e.Message);
                 throw;
             }
+        }
+
+        public override Task<GenericResponse> Remove(RemoveRequest request, ServerCallContext context)
+        {
+            Logger.LogInformation($"{context.Host} removing \"{request.Key}\" from the cache");
             
+            try
+            {
+                Cache.Exterminatus(request.Key);
+                
+                return Task.FromResult(new GenericResponse()
+                {
+                    Successful = true
+                });
+            }
+            catch (Exception e)
+            {
+                Logger.LogInformation(e.Message);
+                
+                return Task.FromResult(new GenericResponse()
+                {
+                    Successful = false,
+                    Message = e.Message
+                });
+            }
+            throw new NotImplementedException();
         }
 
         public override Task<ReportResponse> Report(ReportRequest request, ServerCallContext context)
@@ -71,12 +99,15 @@ namespace Intra_Block.COM
             return Task.FromResult(new ReportResponse()
             {
                 NumberOfEntries = (ulong)Cache.Keys().Count,
+                Uptime = (ulong)(DateTime.Now - Process.GetCurrentProcess().StartTime).Ticks,
+                CurrentMemoryUsage = (ulong)Process.GetCurrentProcess().PrivateMemorySize64,
                 Averages = new Averages
                 {
                     ReapsPerMinute = report.Averages.ReapsPerMinute,
                     RequestsPerMinute = report.Averages.RequestsPerMinute,
                     TimeToInsert = report.Averages.TimeToInsert,
-                    TimeToRetrieve = report.Averages.TimeToRetrieve
+                    TimeToRetrieve = report.Averages.TimeToRetrieve,
+                    RequestCompletion = report.Averages.RequestCompletion
                 }
             });
         }
