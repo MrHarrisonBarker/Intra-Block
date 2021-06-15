@@ -7,10 +7,14 @@ package intra;
 service Intra {
   rpc Insert (InsertionRequest) returns (InsertionResponse);
   rpc Retrieve (RetrievalRequest) returns (RetrievalResponse);
+  
+  rpc Report (ReportRequest) returns (ReportResponse); 
 }
 
 message InsertionRequest {
   string key = 1;
+  string value = 2;
+  uint64 expiry = 3;
 }
 
 message InsertionResponse {
@@ -26,3 +30,17 @@ message RetrievalResponse {
 }
 
 message Exterminatus {}
+
+message ReportRequest {}
+
+message ReportResponse {
+  uint64 numberOfEntries = 1;
+  Averages averages = 2;
+}
+
+message Averages {
+    double RequestsPerMinute = 1;
+    double TimeToRetrieve = 2;
+    double TimeToInsert = 3;
+    double ReapsPerMinute = 4;
+}

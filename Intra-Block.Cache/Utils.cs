@@ -4,9 +4,9 @@ namespace Intra_Block.Cache
 {
     public static class Utils
     {
-        public static long TimeInMilliseconds()
+        public static long TimeInMicroSeconds()
         {
-            return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            return DateTime.Now.Ticks / 10;
         }
     }
 }

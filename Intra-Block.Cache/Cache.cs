@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Intra_Block.Cache
 {
@@ -20,29 +21,31 @@ namespace Intra_Block.Cache
         private int CacheSize;
         private readonly int MaximumSize;
         private readonly Administratum Administratum;
+        private readonly ILogger<Cache> Logger;
 
-        public Cache(Administratum administratum, int maximumSize = 100)
+        public Cache(Administratum administratum, ILogger<Cache> logger, int maximumSize = 100)
         {
             MaximumSize = maximumSize;
             Administratum = administratum;
+            Logger = logger;
         }
 
         public string Retrieve(string key)
         {
-            var s = Utils.TimeInMilliseconds();
+            var s = Utils.TimeInMicroSeconds();
 
             if (!CacheStore.ContainsKey(key)) throw new DoesNotExistException(key);
 
             CacheStore[key].LastRetrieval = DateTime.Now;
 
-            Administratum.ReportRetrieval(Math.Abs(Utils.TimeInMilliseconds() - s));
+            Administratum.ReportRetrieval(Math.Abs(Utils.TimeInMicroSeconds() - s));
 
             return CacheStore[key].Data;
         }
 
         public void Insert(string key, string value, ulong expiry = 0)
         {
-            var s = Utils.TimeInMilliseconds();
+            var s = Utils.TimeInMicroSeconds();
 
             if (CacheStore.ContainsKey(key))
             {
@@ -54,7 +57,7 @@ namespace Intra_Block.Cache
 
                 if (CacheSize + newValueSize > MaximumSize) throw new CacheSizeExceededException(newValueSize, CacheSize);
 
-                CacheStore.Add(key, new CacheEntry()
+                CacheStore.Add(key, new CacheEntry
                 {
                     Data = value,
                     Updated = DateTime.Now,
@@ -65,7 +68,7 @@ namespace Intra_Block.Cache
                 CacheSize += newValueSize;
             }
 
-            Administratum.ReportRetrieval(Math.Abs(Utils.TimeInMilliseconds() - s));
+            Administratum.ReportInsertion(Math.Abs(Utils.TimeInMicroSeconds() - s));
         }
 
         private static int SizeOfEntry(string value)

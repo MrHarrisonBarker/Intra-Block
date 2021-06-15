@@ -17,26 +17,25 @@ namespace Intra_Block.Tests.Cache
         [SetUp]
         public void SetUp()
         {
-            Administratum = new Administratum();
-
             var serviceProvider = new ServiceCollection()
                 .AddLogging()
                 .BuildServiceProvider();
 
             LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
+            
+            Administratum = new Administratum(new Logger<Administratum>(LoggerFactory));
         }
 
         [Test]
         public async Task Should_Reap_Old_Key()
         {
-            var cache = new Intra_Block.Cache.Cache(Administratum);
-            cache.Insert("key", "Hello World", 10);
+            var cache = new Intra_Block.Cache.Cache(Administratum,new Logger<Intra_Block.Cache.Cache>(LoggerFactory));
+            cache.Insert("key", "Hello World", 1);
 
             var reaper = new GrimReaper(new Logger<GrimReaper>(LoggerFactory), cache, Administratum);
-
-            var ct = new CancellationTokenSource();
-            ct.CancelAfter(100);
-            await reaper.StartAsync(ct.Token);
+            await reaper.StartAsync(new CancellationToken());
+            
+            await Task.Delay(10);
 
             cache.NumberOfEntries().Should().Be(0);
         }
@@ -44,14 +43,14 @@ namespace Intra_Block.Tests.Cache
         [Test]
         public async Task Should_Not_Reap_Fresh_Key()
         {
-            var cache = new Intra_Block.Cache.Cache(Administratum);
+            var cache = new Intra_Block.Cache.Cache(Administratum,new Logger<Intra_Block.Cache.Cache>(LoggerFactory));
             cache.Insert("key", "Hello World", 1000);
 
             var reaper = new GrimReaper(new Logger<GrimReaper>(LoggerFactory), cache, Administratum);
 
-            var ct = new CancellationTokenSource();
-            ct.CancelAfter(100);
-            await reaper.StartAsync(ct.Token);
+            await reaper.StartAsync(new CancellationToken());
+            
+            await Task.Delay(100);
 
             cache.NumberOfEntries().Should().Be(1);
         }
