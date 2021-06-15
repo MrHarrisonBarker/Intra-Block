@@ -44,7 +44,7 @@ namespace Intra_Block.Tests.COM
                 Expiry = 0
             }, new MockServerContext());
 
-            result.Should().BeEquivalentTo(new InsertionResponse()
+            result.Should().BeEquivalentTo(new GenericResponse()
             {
                 Successful = true
             });
@@ -71,7 +71,7 @@ namespace Intra_Block.Tests.COM
                 Expiry = 0
             }, new MockServerContext());
 
-            result.Should().BeEquivalentTo(new InsertionResponse()
+            result.Should().BeEquivalentTo(new GenericResponse()
             {
                 Successful = true
             });
@@ -91,7 +91,7 @@ namespace Intra_Block.Tests.COM
                 Value = "World",
                 Expiry = 0
             }, new MockServerContext());
-            
+
             var result = await IntraService.Insert(new InsertionRequest()
             {
                 Key = "Another",
@@ -99,9 +99,10 @@ namespace Intra_Block.Tests.COM
                 Expiry = 0
             }, new MockServerContext());
 
-            result.Should().BeEquivalentTo(new InsertionResponse()
+            result.Should().BeEquivalentTo(new GenericResponse()
             {
-                Successful = false
+                Successful = false,
+                Message = "The maximum size of the cache has been exceeded trying to fit 42 into 30"
             });
 
             Cache.Keys().Count.Should().Be(1);
