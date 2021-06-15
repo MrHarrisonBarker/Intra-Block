@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intra-Block.Tests", "Intra-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intra-Block.Client", "Intra-Block.Client\Intra-Block.Client.csproj", "{FAB5BC3D-1481-4F28-85DC-4D4471C25018}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intra-Block.Mock-Client", "Intra-Block.Mock-Client\Intra-Block.Mock-Client.csproj", "{F632E5F2-C356-4A38-879E-CFE20A7BAC18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,17 @@ Global
 		{FAB5BC3D-1481-4F28-85DC-4D4471C25018}.Release|x64.Build.0 = Release|Any CPU
 		{FAB5BC3D-1481-4F28-85DC-4D4471C25018}.Release|x86.ActiveCfg = Release|Any CPU
 		{FAB5BC3D-1481-4F28-85DC-4D4471C25018}.Release|x86.Build.0 = Release|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Debug|x64.Build.0 = Debug|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Debug|x86.Build.0 = Debug|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Release|x64.ActiveCfg = Release|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Release|x64.Build.0 = Release|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Release|x86.ActiveCfg = Release|Any CPU
+		{F632E5F2-C356-4A38-879E-CFE20A7BAC18}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
