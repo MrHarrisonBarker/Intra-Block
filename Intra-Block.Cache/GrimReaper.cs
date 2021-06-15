@@ -12,25 +12,29 @@ namespace Intra_Block.Cache
         void CheckOnCache(object state);
     }
 
-    public class GrimReaper : IHostedService, IDisposable, IGrimReaper
+    public class GrimReaper : BackgroundService
     {
         private readonly ILogger<GrimReaper> Logger;
         private readonly Cache Cache;
         private readonly Administratum Administratum;
         private Timer Timer;
+        private readonly int CheckInterval;
 
-        public GrimReaper(ILogger<GrimReaper> logger, Cache cache, Administratum administratum)
+        public GrimReaper(ILogger<GrimReaper> logger, Cache cache, Administratum administratum, int checkInterval = 60000)
         {
             Logger = logger;
             Cache = cache;
             Administratum = administratum;
+            CheckInterval = checkInterval;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            Timer = new Timer(CheckOnCache, null, TimeSpan.Zero, TimeSpan.FromMinutes(1));
-
-            return Task.CompletedTask;
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                CheckOnCache(null);
+                await Task.Delay(CheckInterval, cancellationToken);
+            }
         }
 
         private void Reap(string key)

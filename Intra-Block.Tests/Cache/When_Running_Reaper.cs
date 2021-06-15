@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -13,46 +14,58 @@ namespace Intra_Block.Tests.Cache
     {
         private ILoggerFactory LoggerFactory;
         private Administratum Administratum;
+        private ServiceCollection Services;
+        private Intra_Block.Cache.Cache Cache;
 
         [SetUp]
         public void SetUp()
         {
-            var serviceProvider = new ServiceCollection()
+            Services = new ServiceCollection();
+            var serviceProvider = Services
+                .AddSingleton<Intra_Block.Cache.Cache>()
+                .AddSingleton<Administratum>()
+                // .AddHostedService<GrimReaper>(provider => new GrimReaper(provider.GetService<ILogger<GrimReaper>>(), provider.GetService<Intra_Block.Cache.Cache>(),
+                //     provider.GetService<Administratum>(), 100))
                 .AddLogging()
                 .BuildServiceProvider();
 
             LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            
-            Administratum = new Administratum(new Logger<Administratum>(LoggerFactory));
+            Administratum = serviceProvider.GetService<Administratum>();
+            Cache = serviceProvider.GetService<Intra_Block.Cache.Cache>();
+
+            // Administratum = new Administratum(new Logger<Administratum>(LoggerFactory));
         }
 
         [Test]
         public async Task Should_Reap_Old_Key()
         {
-            var cache = new Intra_Block.Cache.Cache(Administratum,new Logger<Intra_Block.Cache.Cache>(LoggerFactory));
-            cache.Insert("key", "Hello World", 1);
-
-            var reaper = new GrimReaper(new Logger<GrimReaper>(LoggerFactory), cache, Administratum);
-            await reaper.StartAsync(new CancellationToken());
+            Cache.NumberOfEntries().Should().Be(0);
             
-            await Task.Delay(10);
+            Cache.Insert("key", "Hello World", 10);
+            
+            var reaper = new GrimReaper(new Logger<GrimReaper>(LoggerFactory), Cache, Administratum);
 
-            cache.NumberOfEntries().Should().Be(0);
+            await Task.Delay(20);
+            
+            reaper.CheckOnCache(null);
+
+            Cache.NumberOfEntries().Should().Be(0);
         }
 
         [Test]
         public async Task Should_Not_Reap_Fresh_Key()
         {
-            var cache = new Intra_Block.Cache.Cache(Administratum,new Logger<Intra_Block.Cache.Cache>(LoggerFactory));
-            cache.Insert("key", "Hello World", 1000);
-
-            var reaper = new GrimReaper(new Logger<GrimReaper>(LoggerFactory), cache, Administratum);
-
-            await reaper.StartAsync(new CancellationToken());
+            Cache.NumberOfEntries().Should().Be(0);
             
-            await Task.Delay(100);
+            Cache.Insert("key", "Hello World", 1000);
 
-            cache.NumberOfEntries().Should().Be(1);
+            var reaper = new GrimReaper(new Logger<GrimReaper>(LoggerFactory), Cache, Administratum);
+
+            await Task.Delay(20);
+            
+            reaper.CheckOnCache(null);
+
+            Cache.NumberOfEntries().Should().Be(1);
         }
     }
 }
