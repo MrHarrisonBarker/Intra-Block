@@ -50,15 +50,6 @@ namespace Intra_Block.Cache
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            Logger.LogInformation("The Grim Reaper has met an ill fate");
-
-            Timer?.Change(Timeout.Infinite, 0);
-
-            return Task.CompletedTask;
-        }
-
         public void CheckOnCache(object state)
         {
             Logger.LogInformation("Checking on cache");
@@ -79,11 +70,6 @@ namespace Intra_Block.Cache
                     Reap(Cache.Keys().ToArray()[i]);
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            Timer?.Dispose();
         }
     }
 }
