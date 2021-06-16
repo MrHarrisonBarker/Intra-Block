@@ -1,5 +1,5 @@
 using System;
-using Intra_Block.COM;
+using Intra_Block.Cache;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 

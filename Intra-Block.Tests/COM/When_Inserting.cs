@@ -37,7 +37,7 @@ namespace Intra_Block.Tests.COM
         {
             Cache.Keys().Count.Should().Be(0);
 
-            var result = await IntraService.Insert(new InsertionRequest()
+            var result = await IntraService.Insert(new Intra_Block.Cache.InsertionRequest()
             {
                 Key = "Hello",
                 Value = "World",

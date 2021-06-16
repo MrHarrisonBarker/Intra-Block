@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
@@ -17,11 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Intra-Block.Cache\Intra-Block.Cache.csproj" />
+    <ProjectReference Include="..\Intra-Block.Client\Intra-Block.Client.csproj" />
     <ProjectReference Include="..\Intra-Block.COM\Intra-Block.COM.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Client" />
   </ItemGroup>
 
 </Project>

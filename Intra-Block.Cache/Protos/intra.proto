@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option csharp_namespace = "Intra_Block.COM";
+option csharp_namespace = "Intra_Block.Cache";
 
-package intra;
+package Intra;
 
 service Intra {
   rpc Insert (InsertionRequest) returns (GenericResponse);
@@ -39,10 +39,10 @@ message ReportResponse {
   uint64 numberOfEntries = 1;
   uint64 currentMemoryUsage = 2;
   uint64 uptime = 3;
-  Averages averages = 4;
+  ProtoAverages averages = 4;
 }
 
-message Averages {
+message ProtoAverages {
   double RequestsPerMinute = 1;
   double TimeToRetrieve = 2;
   double TimeToInsert = 3;

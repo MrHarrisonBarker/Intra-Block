@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Grpc.Core;
 using Intra_Block.Cache;
 using Microsoft.Extensions.Logging;
-using Serilog;
 
 namespace Intra_Block.COM
 {
@@ -101,7 +100,7 @@ namespace Intra_Block.COM
                 NumberOfEntries = (ulong)Cache.Keys().Count,
                 Uptime = (ulong)(DateTime.Now - Process.GetCurrentProcess().StartTime).Ticks,
                 CurrentMemoryUsage = (ulong)Process.GetCurrentProcess().PrivateMemorySize64,
-                Averages = new Averages
+                Averages = new ProtoAverages()
                 {
                     ReapsPerMinute = report.Averages.ReapsPerMinute,
                     RequestsPerMinute = report.Averages.RequestsPerMinute,

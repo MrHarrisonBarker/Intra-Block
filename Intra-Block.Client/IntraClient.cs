@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Intra_Block.Cache;
 using Intra_Block.COM;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ namespace Intra_Block.Client
     public class IntraCache : IDistributedCache
     {
         private readonly ILogger<IntraCache> Logger;
-        private readonly Intra.IntraClient Client;
+        private readonly Intra_Block.Cache.Intra.IntraClient Client;
 
         public IntraCache(ILogger<IntraCache> logger, Intra.IntraClient intraClient)
         {
@@ -48,7 +49,7 @@ namespace Intra_Block.Client
                 Client.Insert(new InsertionRequest()
                 {
                     Key = key,
-                    Value = value.ToString(),
+                    Value = Encoding.UTF8.GetString(value),
                     Expiry = options.AbsoluteExpiration.HasValue ? (ulong)(options.AbsoluteExpiration.Value.Ticks / TimeSpan.TicksPerMillisecond) : 0
                 });
             }
