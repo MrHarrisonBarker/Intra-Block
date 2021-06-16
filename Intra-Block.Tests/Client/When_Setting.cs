@@ -1,13 +1,10 @@
-using System;
-using System.Text;
-using System.Threading;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Grpc.Net.Client;
 using Intra_Block.Cache;
-using Intra_Block.Client;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Moq;
+using Intra_Block.COM;
+using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
 
 namespace Intra_Block.Tests.Client
@@ -15,45 +12,75 @@ namespace Intra_Block.Tests.Client
     [TestFixture]
     public class When_Setting
     {
-        private ILoggerFactory LoggerFactory;
-        private IntraCache IntraCache;
-        private Mock<Intra.IntraClient> MockClient;
+        private Intra.IntraClient IntraClient;
+        private HttpClient Client;
 
         [SetUp]
         public void SetUp()
         {
-            // var serviceProvider = new ServiceCollection()
-            // serviceCollection.AddGrpcClient<new Mock<Intra.IntraClient>().Object>(options => { options.Address = new Uri(""); });
-            // serviceCollection.AddTransient<IntraCache>();
+            var factory = new WebApplicationFactory<Startup>();
+            Client = factory.CreateClient();
 
-            var serviceProvider = new ServiceCollection().AddLogging().BuildServiceProvider();
+            var channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions
+            {
+                HttpClient = Client
+            });
 
-            LoggerFactory = serviceProvider.GetService<ILoggerFactory>();
-
-            MockClient = new Mock<Intra.IntraClient>();
-
-            IntraCache = new IntraCache(new Logger<IntraCache>(LoggerFactory), MockClient.Object);
+            IntraClient = new Intra.IntraClient(channel);
         }
 
         [Test]
         public async Task Should_Set()
         {
-            MockClient.Setup(client => client.Insert(new InsertionRequest()
+            var result = IntraClient.Insert(new InsertionRequest()
             {
                 Key = "Hello",
                 Value = "World",
                 Expiry = 0
-            }, null, null, default(global::System.Threading.CancellationToken)));
+            });
 
-            // MockClient.Setup(c => c.Insert())
-
-            IntraCache.Set("Hello", Encoding.UTF8.GetBytes("World"), null);
+            result.Successful.Should().BeTrue();
         }
 
         [Test]
         public async Task Should_Exceed_Size()
         {
-            throw new NotImplementedException();
+            IntraClient.Insert(new InsertionRequest()
+            {
+                Key = "World",
+                Value = "Hello",
+                Expiry = 0
+            });
+            
+            IntraClient.Insert(new InsertionRequest()
+            {
+                Key = "World2",
+                Value = "Hello",
+                Expiry = 0
+            });
+            
+            IntraClient.Insert(new InsertionRequest()
+            {
+                Key = "World3",
+                Value = "Hello",
+                Expiry = 0
+            });
+            
+            IntraClient.Insert(new InsertionRequest()
+            {
+                Key = "World4",
+                Value = "Hello",
+                Expiry = 0
+            });
+            
+            var result = IntraClient.Insert(new InsertionRequest()
+            {
+                Key = "Hello",
+                Value = "World",
+                Expiry = 0
+            });
+
+            result.Successful.Should().BeFalse();
         }
     }
 }
