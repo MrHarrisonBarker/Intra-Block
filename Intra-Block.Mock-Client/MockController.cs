@@ -48,5 +48,15 @@ namespace Intra_Block.Mock_Client
 
             return Ok();
         }
+        
+        [HttpGet]
+        public ActionResult Refresh(string key)
+        {
+            Logger.LogInformation($"Refreshing \"{key}\"");
+
+            Cache.Refresh(key);
+
+            return Ok();
+        }
     }
 }

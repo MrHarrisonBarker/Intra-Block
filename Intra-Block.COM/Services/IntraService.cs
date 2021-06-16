@@ -86,7 +86,31 @@ namespace Intra_Block.COM
                     Message = e.Message
                 });
             }
-            throw new NotImplementedException();
+        }
+
+        public override Task<GenericResponse> Refresh(RefreshRequest request, ServerCallContext context)
+        {
+            Logger.LogInformation($"{context.Host} refreshing \"{request.Key}\"");
+
+            try
+            {
+                Cache.Refresh(request.Key);
+                
+                return Task.FromResult(new GenericResponse()
+                {
+                    Successful = true
+                });
+            }
+            catch (Exception e)
+            {
+                Logger.LogInformation(e.Message);
+                
+                return Task.FromResult(new GenericResponse()
+                {
+                    Successful = false,
+                    Message = e.Message
+                });
+            }
         }
 
         public override Task<ReportResponse> Report(ReportRequest request, ServerCallContext context)

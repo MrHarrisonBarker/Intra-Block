@@ -10,6 +10,7 @@ namespace Intra_Block.Cache
         string Retrieve(string key);
         void Insert(string key, string value, ulong expiry);
         void Exterminatus(string key);
+        void Refresh(string key);
         int NumberOfEntries();
         ICollection<CacheEntry> Entries();
         ICollection<string> Keys();
@@ -83,6 +84,13 @@ namespace Intra_Block.Cache
             CacheSize -= SizeOfEntry(CacheStore[key].Data);
 
             CacheStore.Remove(key);
+        }
+
+        public void Refresh(string key)
+        {
+            if (!CacheStore.ContainsKey(key)) throw new DoesNotExistException(key);
+            
+            CacheStore[key].LastRetrieval = DateTime.Now;
         }
 
         public int NumberOfEntries()

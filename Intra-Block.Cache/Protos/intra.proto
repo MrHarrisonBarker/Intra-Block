@@ -8,6 +8,7 @@ service Intra {
   rpc Insert (InsertionRequest) returns (GenericResponse);
   rpc Retrieve (RetrievalRequest) returns (RetrievalResponse);
   rpc Remove (RemoveRequest) returns (GenericResponse);
+  rpc Refresh (RefreshRequest) returns (GenericResponse);
 
   rpc Report (ReportRequest) returns (ReportResponse);
 }
@@ -64,3 +65,6 @@ message GenericResponse {
   string message = 2;
 }
 
+message RefreshRequest {
+  string key = 1;
+}

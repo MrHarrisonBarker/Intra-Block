@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace Intra_Block.Tests.Client
 {
     [TestFixture]
-    public class When_Removing
+    public class When_Refreshing
     {
         private Intra.IntraClient IntraClient;
         private HttpClient Client;
@@ -30,11 +30,11 @@ namespace Intra_Block.Tests.Client
         }
 
         [Test]
-        public async Task Should_Remove()
+        public async Task Should_Refresh()
         {
             IntraClient.Insert(new InsertionRequest() { Key = "Hello", Value = "World" });
             
-            var result = IntraClient.Remove(new RemoveRequest()
+            var result = IntraClient.Refresh(new RefreshRequest()
             {
                 Key = "Hello"
             });
@@ -45,7 +45,7 @@ namespace Intra_Block.Tests.Client
         [Test]
         public async Task Should_Not_Find()
         {
-            var result = IntraClient.Remove(new RemoveRequest()
+            var result = IntraClient.Refresh(new RefreshRequest()
             {
                 Key = "DOES NOT EXIST"
             });

@@ -67,7 +67,18 @@ namespace Intra_Block.Client
 
         public void Refresh(string key)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                Client.Refresh(new RefreshRequest()
+                {
+                    Key = key
+                });
+            }
+            catch (Exception e)
+            {
+                Logger.LogInformation(e.Message);
+                throw;
+            }
         }
 
         public Task RefreshAsync(string key, CancellationToken token = new CancellationToken())
